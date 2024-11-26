@@ -1,0 +1,9 @@
+#!/bin/bash
+
+VPNC_FILE='/var/run/vpnc.pid'
+
+if [[ -e "${VPNC_FILE}" ]]; then
+  echo "on"  # Prints status to be displayed in i3blocks
+else
+  echo "off"  # Prints status when VPN is not active
+fi

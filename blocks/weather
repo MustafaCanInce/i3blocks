@@ -1,0 +1,167 @@
+#!/bin/bash
+
+API_KEY=""
+CITY=""
+
+URL="http://api.weatherapi.com/v1/current.json?key=$API_KEY&q=$CITY"
+
+response=$(curl -s $URL)
+
+temperature=$(echo $response | jq -r '.current.temp_c')
+condition=$(echo $response | jq -r '.current.condition.text')
+is_day=$(echo $response | jq -r '.current.is_day')
+
+case "$condition" in
+  "Sunny")
+    symbol="☀️"
+    ;;
+  "Partly Cloudy")
+    symbol="🌥️"
+    ;;
+  "Cloudy")
+    symbol="☁️"
+    ;;
+  "Overcast")
+    symbol="☁️"
+    ;;
+  "Mist")
+    symbol="🌫️"
+    ;;
+  "Patchy rain possible")
+    symbol="🌧️"
+    ;;
+  "Patchy rain nearby")
+    symbol="🌧️"
+    ;;
+  "Patchy snow possible")
+    symbol="🌨️"
+    ;;
+  "Patchy sleet possible")
+    symbol="🌨️"
+    ;;
+  "Patchy freezing drizzle possible")
+    symbol="🌨️"
+    ;;
+  "Thundery outbreaks possible")
+    symbol="⛈️"
+    ;;
+  "Blowing snow")
+    symbol="❄️💨"
+    ;;
+  "Blizzard")
+    symbol="❄️❄️❄️"
+    ;;
+  "Fog")
+    symbol="🌫️"
+    ;;
+  "Freezing fog")
+    symbol="🌫️❄️"
+    ;;
+  "Patchy light drizzle")
+    symbol="🌦️"
+    ;;
+  "Light drizzle")
+    symbol="🌦️"
+    ;;
+  "Freezing drizzle")
+    symbol="🌦️❄️"
+    ;;
+  "Heavy freezing drizzle")
+    symbol="🌦️❄️❄️"
+    ;;
+  "Patchy light rain")
+    symbol="🌧️"
+    ;;
+  "Light rain")
+    symbol="🌧️"
+    ;;
+  "Moderate rain at times")
+    symbol="🌧️"
+    ;;
+  "Moderate rain")
+    symbol="🌧️"
+    ;;
+  "Heavy rain at times")
+    symbol="🌧️"
+    ;;
+  "Heavy rain")
+    symbol="🌧️🌧️"
+    ;;
+  "Light freezing rain")
+    symbol="🌧️❄️"
+    ;;
+  "Moderate or heavy freezing rain")
+    symbol="🌧️❄️❄️"
+    ;;
+  "Light sleet")
+    symbol="🌨️"
+    ;;
+  "Moderate or heavy sleet")
+    symbol="🌨️🌨️"
+    ;;
+  "Patchy light snow")
+    symbol="🌨️"
+    ;;
+  "Light snow")
+    symbol="🌨️"
+    ;;
+  "Patchy moderate snow")
+    symbol="🌨️❄️"
+    ;;
+  "Moderate snow")
+    symbol="🌨️❄️"
+    ;;
+  "Patchy heavy snow")
+    symbol="🌨️❄️❄️"
+    ;;
+  "Heavy snow")
+    symbol="🌨️❄️❄️❄️"
+    ;;
+  "Ice pellets")
+    symbol="🌨️💎"
+    ;;
+  "Light rain shower")
+    symbol="🌧️"
+    ;;
+  "Moderate or heavy rain shower")
+    symbol="🌧️🌧️"
+    ;;
+  "Torrential rain shower")
+    symbol="🌧️🌧️🌧️"
+    ;;
+  "Light sleet showers")
+    symbol="🌨️🌧️"
+    ;;
+  "Moderate or heavy sleet showers")
+    symbol="🌨️🌧️🌧️"
+    ;;
+  "Light snow showers")
+    symbol="🌨️"
+    ;;
+  "Moderate or heavy snow showers")
+    symbol="🌨️❄️"
+    ;;
+  "Light showers of ice pellets")
+    symbol="🌨️💎"
+    ;;
+  "Moderate or heavy showers of ice pellets")
+    symbol="🌨️💎💎"
+    ;;
+  "Patchy light rain with thunder")
+    symbol="🌧️⚡"
+    ;;
+  "Moderate or heavy rain with thunder")
+    symbol="🌧️🌩️"
+    ;;
+  "Patchy light snow with thunder")
+    symbol="🌨️⚡"
+    ;;
+  "Moderate or heavy snow with thunder")
+    symbol="🌨️❄️⚡"
+    ;;
+  *)
+    symbol="" 
+    ;;
+esac
+
+echo "$symbol $condition, $temperature°C"

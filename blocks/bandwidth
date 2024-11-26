@@ -1,0 +1,76 @@
+#!/bin/bash
+
+INTERFACE=$(ip route | grep default | awk '{print $5}')
+
+if [[ -z "$INTERFACE" ]]; then
+  exit 1
+fi
+
+DISPLAY=$(echo "${BLOCK_INSTANCE}" | awk -F ';' '{print $2}')
+INSTANCE=$(echo "${BLOCK_INSTANCE}" | awk -F ';' '{print $1}')
+
+if [[ -z "${DISPLAY}" ]]; then
+  DISPLAY="both"
+fi
+
+ONE_KB=1024
+ONE_MB=$((ONE_KB * 1024))
+
+URGENT_VALUE="${ONE_MB}"
+
+PREV_IN=0
+PREV_OUT=0
+PREV_FILE="/tmp/.bandwidth"
+
+if [[ -f "${PREV_FILE}" ]]; then
+  PREV_CONT=$(cat "${PREV_FILE}")
+  PREV_IN=$(echo "${PREV_CONT}" | head -n 1)
+  PREV_OUT=$(echo "${PREV_CONT}" | tail -n 1)
+fi
+
+BANDWIDTH=$(grep "${INTERFACE}" /proc/net/dev | awk -F: '{print $2}' | awk '{print $1" "$9}')
+
+if [[ -z "${BANDWIDTH}" ]]; then
+  exit 1
+fi
+
+BYTES_IN=$(echo "${BANDWIDTH}" | awk '{print $1}')
+BYTES_OUT=$(echo "${BANDWIDTH}" | awk '{print $2}')
+
+ConvertToMB() {
+  MB_VALUE=$(echo "scale=2; ${1} / ${ONE_MB}" | bc)
+  printf "%.2f MB\n" "${MB_VALUE}"
+}
+
+if [[ "${PREV_IN}" != "" ]] && [[ "${PREV_OUT}" != "" ]]; then
+  DIFF_IN=$((BYTES_IN - PREV_IN))
+  DIFF_OUT=$((BYTES_OUT - PREV_OUT))
+
+  USAGE_IN=$(ConvertToMB "${DIFF_IN}")
+  USAGE_OUT=$(ConvertToMB "${DIFF_OUT}")
+
+  WIDTH=12
+  USAGE_IN=$(printf "%-${WIDTH}s" "${USAGE_IN}")
+  USAGE_OUT=$(printf "%-${WIDTH}s" "${USAGE_OUT}")
+
+  if [[ "${DISPLAY}" = "both" ]]; then
+    echo "${USAGE_IN} : ${USAGE_OUT}"
+    echo "${USAGE_IN} : ${USAGE_OUT}"
+  elif [[ "${DISPLAY}" = "in" ]]; then
+    echo "${USAGE_IN}"
+    echo "${USAGE_IN}"
+  elif [[ "${DISPLAY}" = "out" ]]; then
+    echo "${USAGE_OUT}"
+    echo "${USAGE_OUT}"
+  fi
+else
+  echo "?"
+  echo "?"
+fi
+
+echo "${BYTES_IN}" > "${PREV_FILE}"
+echo "${BYTES_OUT}" >> "${PREV_FILE}"
+
+if [[ "${DIFF_IN}" -ge "${URGENT_VALUE}" ]] || [[ "${DIFF_OUT}" -ge "${URGENT_VALUE}" ]]; then
+  exit 33
+fi

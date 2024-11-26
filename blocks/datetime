@@ -1,0 +1,14 @@
+#!/bin/bash
+
+export LANG=en_US.UTF-8
+
+# Format for the date, day name, and time, default to "Day DD-MM-YYYY HH:MM:SS" if BLOCK_INSTANCE is not set
+FORMAT="${BLOCK_INSTANCE:-%A | %d-%m-%Y | %H:%M:%S}"
+
+DATETIME=$(date "+${FORMAT}")
+
+# Print the date, day name, and time
+echo "${DATETIME}"
+
+# Print an empty line
+echo ""

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Fetch the HTML content from the server using curl
+html_content=$(curl -s http://localhost:####/)
+
+# Extract the title (text inside <strong> tag)
+title=$(echo "$html_content" | grep -oP '(?<=<strong>).*?(?=<\/strong>)')
+
+#singer=$(echo "$html_content" | grep -oP '(?<=<div class="card-content"[^>]*>).*?(?=<\/div>)' | sed -n 's/.*<strong>.*<\/strong>\(.*\)/\1/p' | sed 's/<[^>]*>//g' | sed 's/^\s*//;s/\s*$//')
+
+
+echo "$title" #- $singer
